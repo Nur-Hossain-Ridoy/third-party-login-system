@@ -1,6 +1,9 @@
 const express = require('express')
 const mongoose = require('mongoose')
 const auth = require('./routes/auth')
+const passportConfig = require('./passport/passport')
+const passport = require('passport')
+const session = require('express-session')
 const app = express()
 
 // connection to the database
@@ -10,6 +13,19 @@ const DB = async () => {
 }
 DB()
 
+app.use(session({
+    secret: 'mysecretid',
+    resave: false,
+    saveUninitialized: false,
+    cookie: { 
+        secure: true,
+        maxAge: 24 * 60 * 60 * 1000 * 7  // 7 days
+    }
+}))
+
+
+app.use(passport.initialize())
+app.use(passport.session())
 
 app.set('view engine', 'ejs')
 app.use('/auth', auth)
